@@ -129,3 +129,24 @@ class Comment(models.Model):
     
     def __str__(self):
         return f"Comment by {self.name} on {self.post}"
+
+class CommentManager(models.Manager):
+    """Custom manager for Comment model"""
+    
+    def approved(self):
+        """Return only approved comments"""
+        return self.filter(approved=True)
+    
+    def recent_comments(self, count=5):
+        """Return most recent approved comments"""
+        return self.approved().order_by('-created_date')[:count]
+
+# Add this manager to the Comment model
+class Comment(models.Model):
+    # ... existing code ...
+    
+    # Custom manager
+    objects = models.Manager()  # Default manager
+    approved_objects = CommentManager()  # Custom manager
+    
+    # ... rest of the class ...
